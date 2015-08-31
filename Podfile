@@ -1,0 +1,6 @@
+platform:ios, '7.0'
+pod 'RESideMenu', '~> 4.0.7'
+pod 'AFNetworking', '~> 2.0'
+pod 'MBProgressHUD', '~> 0.9.1'
+pod 'SDWebImage', '~> 3.7'
+pod 'GPUImage'
