@@ -9,6 +9,7 @@
 #import "QBObjTableViewController.h"
 
 #import "UIColor+Util.h"
+#import "QBHot.h"
 #import <MBProgressHUD.h>
 
 @interface QBObjTableViewController ()
@@ -69,7 +70,7 @@
     _manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     _manager.responseSerializer.acceptableContentTypes = [_manager.responseSerializer.acceptableContentTypes setByAddingObject:@"text/html"];
     
-    [self fetchObjectsOnPage:15 refresh:YES];
+    [self fetchObjectsOnPage:5 refresh:YES];
     
 }
 
@@ -87,7 +88,57 @@
        parameters:nil
           success:^(AFHTTPRequestOperation *operation, id responseObject){
               NSString *content = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-              NSLog(@"123");
+              /*
+              <div class="mb-m mt-m mlr">
+              
+              <img src="http://pic.qiushibaike.com/system/avtnew/2583/25835276/thumb/20150702013651.jpg" class="avatar s-40 br-l mr-xs"/>
+              
+              
+              <span class="fs-l c-bl touch-user-name">
+              为了她，我
+              </span>
+              
+              </div>
+              <div class="fs-l mlr mt10">
+              儿子一个月多，睡觉时朦胧之中伸个懒腰的时候居然自己放个响屁把自己吓得哇哇大哭！根本停不下来
+              </div>
+               */
+              
+              NSString *pattern = @"<div class=\"mb-m mt-m mlr\">.*?<img src=\"(.*?)\" class=\"avatar.*?class=\"fs-l c-bl touch-user-name\">\n(.*?)\n</span>.*?class=\"fs-l mlr mt10\">\n(.*?)\n</div>";
+              NSError* error = NULL;
+              
+              
+              NSRegularExpression *reg = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionDotMatchesLineSeparators  error:&error];
+              NSArray* match = [reg matchesInString:content options:NSMatchingReportCompletion range:NSMakeRange(0, [content length])];
+              
+              
+              if (match.count != 0)
+              {
+                  for (NSTextCheckingResult *matc in match)
+                  {
+                      NSString *imageUrl = [content substringWithRange:[matc rangeAtIndex:1]];
+                      NSString *authorName = [content substringWithRange:[matc rangeAtIndex:2]];
+                      NSString *contentText = [content substringWithRange:[matc rangeAtIndex:3]];
+                      
+                      NSRange range = [matc range];
+                      NSLog(@"%lu,%lu,%@, %@, %@",(unsigned long)range.location,(unsigned long)range.length,imageUrl, authorName, contentText);
+                      
+                      QBHot *obj = [[QBHot alloc] init];
+                      obj.portraitURL = [NSURL URLWithString:imageUrl];
+                      obj.author = authorName;
+                      obj.body = contentText;
+                      
+                      [_objects addObject:obj];
+                  }
+              }
+              
+              dispatch_async(dispatch_get_main_queue(), ^{
+                  if (self.refreshControl.refreshing) {
+                      [self.refreshControl endRefreshing];
+                  }
+                  
+                  [self.tableView reloadData];
+              });
           }
           failure:^(AFHTTPRequestOperation *operation, NSError *error){
               UIWindow *window = [[UIApplication sharedApplication].windows lastObject];
@@ -132,7 +183,7 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 #warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 

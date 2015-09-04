@@ -64,11 +64,20 @@ static NSString * const kHotCellID = @"HotCell";
     QBHot *Hot = self.objects[row];
     HotCell *cell = [tableView dequeueReusableCellWithIdentifier:kHotCellID forIndexPath:indexPath];
     
+    //UITableViewCell *cell = [UITableViewCell new];
+    
     cell.backgroundColor = [UIColor themeColor];
+    
     
     [cell setContentWithTweet:Hot];
     
+    cell.portrait.tag = row;
+    cell.authorLabel.tag = row;
+    cell.contentLabel.tag = row;
     
+    
+    //cell.textLabel.font = [UIFont systemFontOfSize:19];
+    //cell.textLabel.text = @"1111";
     cell.selectedBackgroundView = [[UIView alloc] initWithFrame:cell.frame];
     cell.selectedBackgroundView.backgroundColor = [UIColor selectCellSColor];
     
@@ -78,7 +87,20 @@ static NSString * const kHotCellID = @"HotCell";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 100;
+    QBHot *Hot = self.objects[indexPath.row];
+    
+    self.label.font = [UIFont boldSystemFontOfSize:14];
+    [self.label setText:Hot.author];
+    
+    CGFloat height = [self.label sizeThatFits:CGSizeMake(tableView.frame.size.width - 60, MAXFLOAT)].height;
+    self.label.font = [UIFont boldSystemFontOfSize:15];
+    [self.label setText:Hot.body];
+    height += [self.label sizeThatFits:CGSizeMake(tableView.frame.size.width - 60, MAXFLOAT)].height;
+    
+    
+    Hot.cellHeight = height;
+    
+    return Hot.cellHeight;
 }
 
 /*

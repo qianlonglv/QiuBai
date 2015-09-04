@@ -15,5 +15,5 @@
 @property (nonatomic, strong) UILabel *contentLabel;
 @property (nonatomic, strong) UIImageView *portrait;
 
-- (void)setContentWithTweet:(QBHot *)tweet;
+- (void)setContentWithTweet:(QBHot *)Hot;
 @end

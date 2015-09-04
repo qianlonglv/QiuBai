@@ -9,7 +9,7 @@
 #import "HotCell.h"
 #import "UIView+Util.h"
 #import "UIColor+Util.h"
-
+#import <SDWebImage/UIImageView+WebCache.h>
 @implementation HotCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -19,6 +19,7 @@
         self.contentView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
         
         [self initSubviews];
+        [self setLayout];
     }
     return self;
 }
@@ -73,9 +74,11 @@
     // Configure the view for the selected state
 }
 
-- (void)setContentWithTweet:(QBHot *)tweet
+- (void)setContentWithTweet:(QBHot *)Hot
 {
-    
+    [_portrait sd_setImageWithURL:Hot.portraitURL placeholderImage:[UIImage imageNamed:@"default-portrait"] options:0];
+    [_authorLabel setText:Hot.author];
+    [_contentLabel setText:Hot.body];
 }
 
 @end

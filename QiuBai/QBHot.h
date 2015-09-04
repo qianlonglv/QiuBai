@@ -7,11 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface QBHot : NSObject
 
 @property (nonatomic, strong) NSURL *portraitURL;
 @property (nonatomic, copy) NSString *author;
 @property (nonatomic, copy) NSString *body;
+@property (nonatomic, assign) CGFloat cellHeight;
 
 @end
